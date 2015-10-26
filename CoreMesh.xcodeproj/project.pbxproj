@@ -8,12 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		661C5CAA1BD8F26A00ACC82F /* CoreMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 661C5CA91BD8F26A00ACC82F /* CoreMesh.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		661C5CDD1BD8F2F000ACC82F /* CoreMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661C5CDC1BD8F2F000ACC82F /* CoreMesh.swift */; };
+		661C5CE11BD8F34900ACC82F /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 661C5CE01BD8F34900ACC82F /* MultipeerConnectivity.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		661C5CA61BD8F26A00ACC82F /* CoreMesh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreMesh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		661C5CA91BD8F26A00ACC82F /* CoreMesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreMesh.h; sourceTree = "<group>"; };
 		661C5CAB1BD8F26A00ACC82F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		661C5CDC1BD8F2F000ACC82F /* CoreMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreMesh.swift; sourceTree = "<group>"; };
+		661C5CE01BD8F34900ACC82F /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,6 +25,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				661C5CE11BD8F34900ACC82F /* MultipeerConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30,6 +35,7 @@
 		661C5C9C1BD8F26A00ACC82F = {
 			isa = PBXGroup;
 			children = (
+				661C5CE01BD8F34900ACC82F /* MultipeerConnectivity.framework */,
 				661C5CA81BD8F26A00ACC82F /* CoreMesh */,
 				661C5CA71BD8F26A00ACC82F /* Products */,
 			);
@@ -47,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				661C5CA91BD8F26A00ACC82F /* CoreMesh.h */,
+				661C5CDC1BD8F2F000ACC82F /* CoreMesh.swift */,
 				661C5CAB1BD8F26A00ACC82F /* Info.plist */,
 			);
 			path = CoreMesh;
@@ -90,6 +97,7 @@
 		661C5C9D1BD8F26A00ACC82F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Akio Yasui";
 				TargetAttributes = {
@@ -130,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				661C5CDD1BD8F2F000ACC82F /* CoreMesh.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +237,7 @@
 		661C5CAF1BD8F26A00ACC82F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -238,12 +248,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.prioirs.akkyie.CoreMesh;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		661C5CB01BD8F26A00ACC82F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -276,6 +288,7 @@
 				661C5CB01BD8F26A00ACC82F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
