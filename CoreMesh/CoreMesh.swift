@@ -12,7 +12,6 @@ import MultipeerConnectivity
 
 // MARK:- General Definitions
 // MARK: MeshManager
-
 public protocol MeshManager {
 
 	var peers: [Peer] { get }
@@ -34,7 +33,6 @@ public protocol MeshManagerDelegate {
 }
 
 // MARK: Peer
-
 public func ==(lhs: Peer, rhs: Peer) -> Bool {
 	return lhs.UUID == lhs.UUID
 }
@@ -51,14 +49,13 @@ public struct Peer: Hashable {
 }
 
 // MARK: PeerStatus
-
 public enum PeerStatus {
 	case NotConnected
 	case Connecting
 	case Connected
 }
-// MARK: Message
 
+// MARK: Message
 public protocol Message {
 	var name: String { get }
 	var JSON: [String: String] { get }
@@ -114,7 +111,6 @@ public enum Registration: Message {
 }
 
 // MARK:- Implementation with Multipeer Connectivity
-
 public class DualMeshManager: NSObject, MeshManager {
 
 	private let serviceType = "CoreMesh"

@@ -1,0 +1,7 @@
+
+use_frameworks!
+
+target 'CoreMeshSample' do
+  pod "GCDWebServer", "~> 3.0"
+end
+

@@ -1,0 +1,6 @@
+framework module Pods_CoreMeshSample {
+  umbrella header "Pods-CoreMeshSample-umbrella.h"
+
+  export *
+  module * { export * }
+}
