@@ -10,6 +10,10 @@
 		661C5CAA1BD8F26A00ACC82F /* CoreMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 661C5CA91BD8F26A00ACC82F /* CoreMesh.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		661C5CDD1BD8F2F000ACC82F /* CoreMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661C5CDC1BD8F2F000ACC82F /* CoreMesh.swift */; };
 		661C5CE11BD8F34900ACC82F /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 661C5CE01BD8F34900ACC82F /* MultipeerConnectivity.framework */; };
+		665FBA641C0788EF0039F6E2 /* MeshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FBA631C0788EF0039F6E2 /* MeshManager.swift */; };
+		665FBA661C0789010039F6E2 /* Peer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FBA651C0789010039F6E2 /* Peer.swift */; };
+		665FBA681C0789060039F6E2 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FBA671C0789060039F6E2 /* Message.swift */; };
+		665FBA6A1C0789350039F6E2 /* DualMeshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FBA691C0789350039F6E2 /* DualMeshManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +22,10 @@
 		661C5CAB1BD8F26A00ACC82F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		661C5CDC1BD8F2F000ACC82F /* CoreMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreMesh.swift; sourceTree = "<group>"; };
 		661C5CE01BD8F34900ACC82F /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
+		665FBA631C0788EF0039F6E2 /* MeshManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshManager.swift; sourceTree = "<group>"; };
+		665FBA651C0789010039F6E2 /* Peer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Peer.swift; sourceTree = "<group>"; };
+		665FBA671C0789060039F6E2 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		665FBA691C0789350039F6E2 /* DualMeshManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DualMeshManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +62,10 @@
 			children = (
 				661C5CA91BD8F26A00ACC82F /* CoreMesh.h */,
 				661C5CDC1BD8F2F000ACC82F /* CoreMesh.swift */,
+				665FBA651C0789010039F6E2 /* Peer.swift */,
+				665FBA671C0789060039F6E2 /* Message.swift */,
+				665FBA631C0788EF0039F6E2 /* MeshManager.swift */,
+				665FBA691C0789350039F6E2 /* DualMeshManager.swift */,
 				661C5CAB1BD8F26A00ACC82F /* Info.plist */,
 			);
 			path = CoreMesh;
@@ -81,6 +93,7 @@
 				661C5CA21BD8F26A00ACC82F /* Frameworks */,
 				661C5CA31BD8F26A00ACC82F /* Headers */,
 				661C5CA41BD8F26A00ACC82F /* Resources */,
+				665FBA751C083DB30039F6E2 /* Run Carthage Script */,
 			);
 			buildRules = (
 			);
@@ -133,11 +146,32 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		665FBA751C083DB30039F6E2 /* Run Carthage Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Carthage Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		661C5CA11BD8F26A00ACC82F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				665FBA661C0789010039F6E2 /* Peer.swift in Sources */,
+				665FBA681C0789060039F6E2 /* Message.swift in Sources */,
+				665FBA641C0788EF0039F6E2 /* MeshManager.swift in Sources */,
+				665FBA6A1C0789350039F6E2 /* DualMeshManager.swift in Sources */,
 				661C5CDD1BD8F2F000ACC82F /* CoreMesh.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
