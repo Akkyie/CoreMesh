@@ -22,27 +22,20 @@ public final class DualMeshManager: NSObject, MeshManager {
 
 	private var peerIDs = [MCPeerID: NSUUID]()
 
-	public let peer: Peer
+	public let ID: NSUUID
 	public var delegate: MeshManagerDelegate?
-	public var peers: [Peer] {
+	public var peers: [NSUUID] {
 		let peers = self.session.connectedPeers
-			.flatMap({ peerID in
-				self.peerIDs[peerID].map({ UUID in (peerID, UUID) })
-			})
-			.map { Peer(name: $0.0.displayName, UUID: $0.1) }
+			.flatMap({ self.peerIDs[$0] })
 		return peers
 	}
 
-	private func peerForID(peerID: MCPeerID) -> Peer? {
-		return self.peerIDs[peerID].map({ Peer(name: peerID.displayName, UUID: $0) })
+	private func peerIDForMCPeerID(peerID: MCPeerID) -> NSUUID? {
+		return self.peerIDs[peerID]
 	}
 
 	public required init(name: String, UUID: NSUUID) {
-		self.peer = Peer(
-			name: name,
-			UUID: UUID
-		)
-
+		self.ID = UUID
 		self.peerID = MCPeerID(displayName: name)
 
 		self.session = MCSession(
@@ -53,7 +46,7 @@ public final class DualMeshManager: NSObject, MeshManager {
 
 		self.advertizer = MCNearbyServiceAdvertiser(
 			peer: self.peerID,
-			discoveryInfo: ["UUID": self.peer.UUID.UUIDString],
+			discoveryInfo: ["UUID": self.ID.UUIDString],
 			serviceType: self.serviceType
 		)
 
@@ -68,7 +61,7 @@ public final class DualMeshManager: NSObject, MeshManager {
 		self.advertizer.delegate = self
 		self.browser.delegate = self
 
-		self.peerIDs[self.peerID] = self.peer.UUID
+		self.peerIDs[self.peerID] = self.ID
 	}
 
 	public func start() {
@@ -84,7 +77,7 @@ public final class DualMeshManager: NSObject, MeshManager {
 		self.browser.stopBrowsingForPeers()
 	}
 
-	public func sendData(data: NSData, peers: [PeerID]) throws {
+	public func sendData(data: NSData, to peers: [NSUUID]) throws {
 		let peerIDs = self.session.connectedPeers.filter({ peerID in
 			peers.contains{ self.peerIDs[peerID]?.isEqual($0) ?? false }
 		})
@@ -95,20 +88,13 @@ public final class DualMeshManager: NSObject, MeshManager {
 		try self.session.sendData(data, toPeers: self.session.connectedPeers, withMode: .Reliable)
 	}
 
-	public func broadcastData(data: NSData, exceptFor peers: [PeerID]) throws {
+	public func broadcastData(data: NSData, exceptFor peers: [NSUUID]) throws {
 		let peerIDs = self.session.connectedPeers.filter { peerID in
 			!(peers.contains{ self.peerIDs[peerID]?.isEqual($0) ?? false })
 		}
 		try self.session.sendData(data, toPeers: peerIDs, withMode: .Reliable)
 	}
 
-	public func sendMessage(message: Message, peers: [PeerID]) throws {
-		try self.sendData(message.data, peers: peers)
-	}
-
-	public func broadcastMessage(message: Message) throws {
-		try self.session.sendData(message.data, toPeers: self.session.connectedPeers, withMode: .Reliable)
-	}
 }
 
 extension DualMeshManager: MCSessionDelegate {
@@ -117,20 +103,23 @@ extension DualMeshManager: MCSessionDelegate {
 
 		switch state {
 		case .NotConnected:
-			guard let peer = self.peerForID(peerID) else {
+			guard let ID = self.peerIDForMCPeerID(peerID) else {
 				return
 			}
 
 			self.peerIDs.removeValueForKey(peerID)
 
 			dispatch_async(dispatch_get_main_queue()) {
-				self.delegate?.meshManager(self, peerStatusDidChange: peer, status: .NotConnected)
+				self.delegate?.meshManager(self, peerStatusDidChange: ID, status: .NotConnected)
 			}
 		case .Connecting: break;
 		case .Connected:
 			do {
-				let message = RegistrationMessage(type: .Request, UUID: self.peer.UUID)
-				try self.session.sendData(message.data, toPeers: [peerID], withMode: .Reliable)
+				var dictionary = [String: String]()
+				dictionary[Constants.InitTypeKey.rawValue] = Constants.InitRequestValue.rawValue
+				dictionary[Constants.InitInfoKey.rawValue] = self.ID.UUIDString
+				let data = try NSJSONSerialization.dataWithJSONObject(dictionary, options: [])
+				try self.session.sendData(data, toPeers: [peerID], withMode: .Reliable)
 			} catch {
 				print(error)
 			}
@@ -140,36 +129,37 @@ extension DualMeshManager: MCSessionDelegate {
 	public func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
 		print(__FUNCTION__)
 
-		guard let peer = self.peerForID(peerID) else {
-			print(NSString(data: data, encoding: NSUTF8StringEncoding))
-			if let message = RegistrationMessage(data: data) {
-				switch message.type {
-				case .Some(.Request):
-					print("received UUIDRequest")
-					let data = RegistrationMessage(type: .Response, UUID: self.peer.UUID).data
+		guard let ID = self.peerIDForMCPeerID(peerID) else {
+			if let dictionary = try? NSJSONSerialization.JSONObjectWithData(data, options: []) {
+				switch dictionary[Constants.InitTypeKey.rawValue] as? String {
+				case .Some(Constants.InitRequestValue.rawValue):
 					do {
 						try self.session.sendData(data, toPeers: [peerID], withMode: .Reliable)
 					} catch let error as NSError {
 						fatalError(error.localizedDescription)
 					}
-				case .Some(.Response):
-					print("received UUIDResponse")
-					peerIDs[peerID] = message.UUID
-					delegate?.meshManager(
-						self,
-						peerStatusDidChange: Peer(name: peerID.displayName, UUID: message.UUID),
-						status: .Connected)
-				case .None:
-					print("could not recognize message")
+				case .Some(Constants.InitResponseValue.rawValue):
+					if let
+					UUIDString = dictionary[Constants.InitInfoKey.rawValue] as? String,
+					UUID = NSUUID(UUIDString: UUIDString)
+					{
+						peerIDs[peerID] = UUID
+						delegate?.meshManager(
+							self,
+							peerStatusDidChange: UUID,
+							status: .Connected)
+					} else {
+						fatalError()
+					}
+				default:
+					fatalError()
 				}
-			} else {
-				print("received data from unknown")
 			}
 			return
 		}
 
 		dispatch_async(dispatch_get_main_queue()) {
-			self.delegate?.meshManager(self, receivedData: data, fromPeer: peer)
+			self.delegate?.meshManager(self, receivedData: data, fromPeer: ID)
 		}
 	}
 

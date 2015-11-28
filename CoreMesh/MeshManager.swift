@@ -8,25 +8,29 @@
 
 import Foundation
 
+internal enum Constants: String {
+	case InitTypeKey = "jp.ad.wide.sfc.CoreMesh.InitializePhase"
+	case InitInfoKey = "jp.ad.wide.sfc.CoreMesh.InitializeInfo"
+	case InitRequestValue = "jp.ad.wide.sfc.CoreMesh.InitializeRequest"
+	case InitResponseValue = "jp.ad.wide.sfc.CoreMesh.InitializeResponse"
+}
+
 // MARK: MeshManager
 public protocol MeshManager {
 
-	var peers: [Peer] { get }
+	var peers: [NSUUID] { get }
 
 	init(name: String, UUID: NSUUID)
 
 	func start()
 	func stop()
 
-	func sendData(data: NSData, peers: [PeerID]) throws
+	func sendData(data: NSData, to peers: [NSUUID]) throws
 	func broadcastData(data: NSData) throws
-
-	func sendMessage(message: Message, peers: [PeerID]) throws
-	func broadcastMessage(message: Message) throws
 
 }
 
 public protocol MeshManagerDelegate {
-	func meshManager(manager: MeshManager, peerStatusDidChange peer: Peer, status: PeerStatus)
-	func meshManager(manager: MeshManager, receivedData data: NSData, fromPeer peer: Peer)
+	func meshManager(manager: MeshManager, peerStatusDidChange peer: NSUUID, status: PeerStatus)
+	func meshManager(manager: MeshManager, receivedData data: NSData, fromPeer peer: NSUUID)
 }
