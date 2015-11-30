@@ -78,17 +78,27 @@ public final class DualMeshManager: NSObject, MeshManager {
 	}
 
 	public func sendData(data: NSData, to peers: [NSUUID]) throws {
+		print(__FUNCTION__)
+		print(self.session.connectedPeers)
 		let peerIDs = self.session.connectedPeers.filter({ peerID in
 			peers.contains{ self.peerIDs[peerID]?.isEqual($0) ?? false }
 		})
+		print(peerIDs)
+		guard peerIDs.count > 0 else {
+			print("No peer connected")
+			return
+		}
 		try self.session.sendData(data, toPeers: peerIDs, withMode: .Reliable)
+		print("Sent")
 	}
 
 	public func broadcastData(data: NSData) throws {
+		print(__FUNCTION__)
 		try self.session.sendData(data, toPeers: self.session.connectedPeers, withMode: .Reliable)
 	}
 
 	public func broadcastData(data: NSData, exceptFor peers: [NSUUID]) throws {
+		print(__FUNCTION__)
 		let peerIDs = self.session.connectedPeers.filter { peerID in
 			!(peers.contains{ self.peerIDs[peerID]?.isEqual($0) ?? false })
 		}
@@ -109,13 +119,11 @@ extension DualMeshManager: MCSessionDelegate {
 
 			self.peerIDs.removeValueForKey(peerID)
 
-			dispatch_async(dispatch_get_main_queue()) {
-				self.delegate?.meshManager(self, peerStatusDidChange: ID, status: .NotConnected)
-			}
+			self.delegate?.meshManager(self, peerStatusDidChange: ID, status: .NotConnected)
 		case .Connecting: break;
 		case .Connected:
 			do {
-				var dictionary = [String: String]()
+				var dictionary = [String: AnyObject]()
 				dictionary[Constants.InitTypeKey.rawValue] = Constants.InitRequestValue.rawValue
 				dictionary[Constants.InitInfoKey.rawValue] = self.ID.UUIDString
 				let data = try NSJSONSerialization.dataWithJSONObject(dictionary, options: [])
@@ -128,12 +136,16 @@ extension DualMeshManager: MCSessionDelegate {
 
 	public func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
 		print(__FUNCTION__)
-
+		print(NSString(data: data, encoding: NSUTF8StringEncoding))
 		guard let ID = self.peerIDForMCPeerID(peerID) else {
 			if let dictionary = try? NSJSONSerialization.JSONObjectWithData(data, options: []) {
 				switch dictionary[Constants.InitTypeKey.rawValue] as? String {
 				case .Some(Constants.InitRequestValue.rawValue):
 					do {
+						var dictionary = [String: AnyObject]()
+						dictionary[Constants.InitTypeKey.rawValue] = Constants.InitResponseValue.rawValue
+						dictionary[Constants.InitInfoKey.rawValue] = self.ID.UUIDString
+						let data = try NSJSONSerialization.dataWithJSONObject(dictionary, options: [])
 						try self.session.sendData(data, toPeers: [peerID], withMode: .Reliable)
 					} catch let error as NSError {
 						fatalError(error.localizedDescription)
@@ -147,7 +159,8 @@ extension DualMeshManager: MCSessionDelegate {
 						delegate?.meshManager(
 							self,
 							peerStatusDidChange: UUID,
-							status: .Connected)
+							status: .Connected
+						)
 					} else {
 						fatalError()
 					}
@@ -158,9 +171,7 @@ extension DualMeshManager: MCSessionDelegate {
 			return
 		}
 
-		dispatch_async(dispatch_get_main_queue()) {
-			self.delegate?.meshManager(self, receivedData: data, fromPeer: ID)
-		}
+		self.delegate?.meshManager(self, receivedData: data, fromPeer: ID)
 	}
 
 	public func session(session: MCSession, didReceiveStream stream: NSInputStream, withName streamName: String, fromPeer peerID: MCPeerID) {

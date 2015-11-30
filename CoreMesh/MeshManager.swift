@@ -31,6 +31,6 @@ public protocol MeshManager {
 }
 
 public protocol MeshManagerDelegate {
-	func meshManager(manager: MeshManager, peerStatusDidChange peer: NSUUID, status: PeerStatus)
+	func meshManager(manager: MeshManager, peerStatusDidChange peerID: NSUUID, status: PeerStatus)
 	func meshManager(manager: MeshManager, receivedData data: NSData, fromPeer peer: NSUUID)
 }
